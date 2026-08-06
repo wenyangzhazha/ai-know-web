@@ -1,6 +1,9 @@
 
 # Maven build output
-target/
+backend/target/
+
+# Maven Wrapper jar (downloaded by mvnw.cmd)
+backend/.mvn/wrapper/maven-wrapper.jar
 
 # IntelliJ IDEA
 .idea/
@@ -28,4 +31,4 @@ frontend/.env.local
 frontend/*.log
 
 # Uploaded documents
-uploads/
+backend/uploads/

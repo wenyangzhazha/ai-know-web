@@ -1,6 +1,6 @@
 # AI 知识库前端
 
-适配后端 `ai-knowledge-base` 的 React 管理端，包含知识库管理、文档上传与处理状态、RAG 对话和历史会话。
+适配 `../backend` 下 Spring Boot 后端的 React 管理端，包含知识库管理、文档上传与处理状态、RAG 对话和历史会话。
 
 ## 本地运行
 
