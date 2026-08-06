@@ -41,6 +41,8 @@ function MessageBubble({ message }: { message: ChatMessage }) {
   )
 }
 
+/******1111111111111111111111111111 */
+
 export default function ChatView({ knowledgeBase }: { knowledgeBase: KnowledgeBase }) {
   const [sessions, setSessions] = useState<ChatSession[]>([])
   const [activeSessionId, setActiveSessionId] = useState<number | null>(null)
@@ -51,7 +53,7 @@ export default function ChatView({ knowledgeBase }: { knowledgeBase: KnowledgeBa
   const [loadingMessages, setLoadingMessages] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const threadRef = useRef<HTMLDivElement>(null)
-
+  
   const loadSessions = useCallback(async () => {
     try {
       const data = await listChatSessions(knowledgeBase.id)
