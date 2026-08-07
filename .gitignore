@@ -1,4 +1,3 @@
-
 # Maven build output
 backend/target/
 
@@ -25,10 +24,9 @@ backend/.mvn/wrapper/maven-wrapper.jar
 Thumbs.db
 
 # Frontend
-frontend/node_modules/
-frontend/dist/
-frontend/.env.local
-frontend/*.log
+node_modules/
+dist/
+.env.local
 
 # Uploaded documents
 backend/uploads/

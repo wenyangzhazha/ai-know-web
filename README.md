@@ -1,39 +1,30 @@
-# AI 知识库
+# AI 知识库前端
 
-前后端分离的 AI 知识库管理系统。前端负责知识库管理、文档上传与 RAG 对话；后端负责文档解析、向量化、检索与生成回答。
+面向 Spring Boot 后端（默认 `http://localhost:8080`）的 Vite + React + TypeScript 管理端，包含知识库管理、文档上传与处理状态、RAG 对话和历史会话。
 
-## 目录结构
-
-```text
-.
-├── backend/   # Spring Boot + LangChain4j 后端
-└── frontend/  # Vite + React + TypeScript 前端
-```
-
-## 启动后端
-
-需要 PostgreSQL 并启用 pgvector 扩展，连接配置在 `backend/src/main/resources/application.yml`。
+## 本地运行
 
 ```bash
-cd backend
-.\mvnw.cmd spring-boot:run
-```
-
-后端默认监听 `http://localhost:8080`。
-
-## 启动前端
-
-```bash
-cd frontend
 npm install
 npm run dev
 ```
 
-前端默认监听 `http://localhost:5173`，开发服务器会把 `/api` 代理到 `http://localhost:8080`。
+默认监听 `http://localhost:5173`，开发服务器会把 `/api` 代理到 `http://localhost:8080`。
 
 ## 构建
 
 ```bash
-cd frontend
 npm run build
 ```
+
+产物输出到 `dist/`。
+
+## 后端地址配置
+
+复制 `.env.example` 为 `.env.local` 并按需修改：
+
+```bash
+VITE_API_BASE=https://your-api.example.com
+```
+
+如果前端和后端部署在不同域名，需要后端对 `/api/**` 开启 CORS。
