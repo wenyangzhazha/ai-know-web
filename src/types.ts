@@ -14,6 +14,60 @@ export interface KnowledgeBase {
 
 export type DocumentStatus = 'UPLOADED' | 'PARSING' | 'CHUNKING' | 'EMBEDDING' | 'READY' | 'FAILED'
 
+export type KnowledgeItemType = 'QUESTION' | 'DOCUMENT'
+
+export type KnowledgeItemStatus = DocumentStatus
+
+export interface KnowledgeItem {
+  id: number
+  knowledgeBaseId: number
+  itemType: KnowledgeItemType
+  title: string
+  content: string
+  category: string
+  source: string
+  sourceUrl: string
+  tags: string
+  fileName: string | null
+  fileType: string | null
+  fileSize: number | null
+  filePath: string | null
+  status: KnowledgeItemStatus
+  chunkCount: number
+  errorMessage: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface KnowledgeItemRequest {
+  knowledgeBaseId: number
+  type: KnowledgeItemType
+  title: string
+  content?: string
+  category?: string
+  source?: string
+  sourceUrl?: string
+  tags?: string[]
+}
+
+export interface PageResult<T> {
+  content: T[]
+  totalElements: number
+  totalPages: number
+  number: number
+  size: number
+}
+
+export interface FacetItem {
+  value: string
+  count: number
+}
+
+export interface KnowledgeFacets {
+  categories: FacetItem[]
+  sources: FacetItem[]
+}
+
 export interface KnowledgeDocument {
   id: number
   knowledgeBaseId: number
@@ -47,8 +101,9 @@ export interface ChatMessage {
 }
 
 export interface SourceInfo {
-  documentId: number
-  documentTitle: string
+  itemId: number
+  itemType: KnowledgeItemType
+  itemTitle: string
   content: string
   score: number
 }

@@ -28,7 +28,8 @@ function MessageBubble({ message }: { message: ChatMessage }) {
             {sources.map((source, index) => (
               <div key={index} className="source-item">
                 <div className="source-head">
-                  <strong>{source.documentTitle || `文档 #${source.documentId}`}</strong>
+                  <strong>{source.itemTitle || `条目 #${source.itemId}`}</strong>
+                  <span className="source-type">{source.itemType === 'DOCUMENT' ? '文档' : '题目'}</span>
                   <span>{Math.round(source.score * 100)}%</span>
                 </div>
                 <p>{source.content}</p>

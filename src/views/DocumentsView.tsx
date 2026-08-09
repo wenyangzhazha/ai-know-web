@@ -10,12 +10,12 @@ import {
   UploadCloud,
 } from 'lucide-react'
 import { deleteDocument, listDocuments, uploadDocument } from '../api'
-import type { DocumentStatus, KnowledgeBase, KnowledgeDocument } from '../types'
+import type { KnowledgeBase, KnowledgeItem, KnowledgeItemStatus } from '../types'
 import { Button, EmptyState, ErrorBanner, IconButton, Modal, Spinner } from '../ui'
 
-const PROCESSING_STATUSES: DocumentStatus[] = ['UPLOADED', 'PARSING', 'CHUNKING', 'EMBEDDING']
+const PROCESSING_STATUSES: KnowledgeItemStatus[] = ['UPLOADED', 'PARSING', 'CHUNKING', 'EMBEDDING']
 
-const STATUS_META: Record<DocumentStatus, { label: string; icon: ReactNode; className: string }> = {
+const STATUS_META: Record<KnowledgeItemStatus, { label: string; icon: ReactNode; className: string }> = {
   UPLOADED: { label: '待处理', icon: <Clock size={14} />, className: 'status-pending' },
   PARSING: { label: '解析中', icon: <Loader2 size={14} className="spin" />, className: 'status-processing' },
   CHUNKING: { label: '切块中', icon: <Loader2 size={14} className="spin" />, className: 'status-processing' },
@@ -24,7 +24,7 @@ const STATUS_META: Record<DocumentStatus, { label: string; icon: ReactNode; clas
   FAILED: { label: '失败', icon: <AlertCircle size={14} />, className: 'status-failed' },
 }
 
-function StatusBadge({ status }: { status: DocumentStatus }) {
+function StatusBadge({ status }: { status: KnowledgeItemStatus }) {
   const meta = STATUS_META[status]
   return (
     <span className={`status-badge ${meta.className}`}>
@@ -47,11 +47,11 @@ function formatDate(value: string) {
 }
 
 export default function DocumentsView({ knowledgeBase }: { knowledgeBase: KnowledgeBase }) {
-  const [documents, setDocuments] = useState<KnowledgeDocument[]>([])
+  const [documents, setDocuments] = useState<KnowledgeItem[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [docToDelete, setDocToDelete] = useState<KnowledgeDocument | null>(null)
+  const [docToDelete, setDocToDelete] = useState<KnowledgeItem | null>(null)
   const [dragging, setDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -206,9 +206,9 @@ export default function DocumentsView({ knowledgeBase }: { knowledgeBase: Knowle
                     </div>
                   </td>
                   <td>
-                    <span className="type-chip">{doc.fileType.toUpperCase()}</span>
+                    <span className="type-chip">{doc.fileType?.toUpperCase() ?? '-'}</span>
                   </td>
-                  <td>{formatBytes(doc.fileSize)}</td>
+                  <td>{formatBytes(doc.fileSize ?? 0)}</td>
                   <td>
                     <StatusBadge status={doc.status} />
                   </td>

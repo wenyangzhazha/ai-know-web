@@ -4,6 +4,7 @@ import {
   Database,
   FileText,
   FolderPlus,
+  ListChecks,
   Menu,
   MessageSquare,
   Plus,
@@ -13,12 +14,13 @@ import { createKnowledgeBase, deleteKnowledgeBase, listKnowledgeBases } from './
 import type { KnowledgeBase } from './types'
 import { Button, EmptyState, ErrorBanner, IconButton, Modal, Spinner } from './ui'
 import DocumentsView from './views/DocumentsView'
+import QuestionsView from './views/QuestionsView'
 import ChatView from './views/ChatView'
 
 export default function App() {
   const [knowledgeBases, setKnowledgeBases] = useState<KnowledgeBase[]>([])
   const [activeKbId, setActiveKbId] = useState<number | null>(null)
-  const [view, setView] = useState<'documents' | 'chat'>('documents')
+  const [view, setView] = useState<'documents' | 'questions' | 'chat'>('documents')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -166,6 +168,14 @@ export default function App() {
                 </button>
                 <button
                   type="button"
+                  className={view === 'questions' ? 'active' : ''}
+                  onClick={() => setView('questions')}
+                >
+                  <ListChecks size={16} />
+                  题库管理
+                </button>
+                <button
+                  type="button"
                   className={view === 'chat' ? 'active' : ''}
                   onClick={() => setView('chat')}
                 >
@@ -190,6 +200,8 @@ export default function App() {
           {activeKb ? (
             view === 'documents' ? (
               <DocumentsView key={`${activeKb.id}-documents`} knowledgeBase={activeKb} />
+            ) : view === 'questions' ? (
+              <QuestionsView key={`${activeKb.id}-questions`} knowledgeBase={activeKb} />
             ) : (
               <ChatView key={`${activeKb.id}-chat`} knowledgeBase={activeKb} />
             )
