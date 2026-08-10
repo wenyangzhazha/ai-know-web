@@ -97,6 +97,7 @@ export interface ChatMessage {
   role: 'user' | 'assistant'
   content: string
   sources: string | null
+  citations: string | null
   createdAt: string
 }
 
@@ -106,10 +107,13 @@ export interface SourceInfo {
   itemTitle: string
   content: string
   score: number
+  chunkId: number
+  chunkIndex: number
 }
 
 export interface ChatResult {
   sessionId: number
   answer: string
   sources: SourceInfo[]
+  citations: SourceInfo[]
 }

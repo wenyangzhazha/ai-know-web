@@ -3,6 +3,8 @@ import type { ReactNode } from 'react'
 import {
   AlertCircle,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   Clock,
   FileText,
   Loader2,
@@ -49,6 +51,9 @@ function formatDate(value: string) {
 export default function DocumentsView({ knowledgeBase }: { knowledgeBase: KnowledgeBase }) {
   const [documents, setDocuments] = useState<KnowledgeItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(0)
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalElements, setTotalElements] = useState(0)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [docToDelete, setDocToDelete] = useState<KnowledgeItem | null>(null)
@@ -57,15 +62,17 @@ export default function DocumentsView({ knowledgeBase }: { knowledgeBase: Knowle
 
   const loadDocuments = useCallback(async () => {
     try {
-      const data = await listDocuments(knowledgeBase.id)
-      setDocuments(data)
+      const data = await listDocuments(knowledgeBase.id, page, 20)
+      setDocuments(data.content)
+      setTotalPages(data.totalPages)
+      setTotalElements(data.totalElements)
       setError(null)
     } catch (e) {
       setError(e instanceof Error ? e.message : '加载文档失败')
     } finally {
       setLoading(false)
     }
-  }, [knowledgeBase.id])
+  }, [knowledgeBase.id, page])
 
   useEffect(() => {
     void loadDocuments()
@@ -98,6 +105,11 @@ export default function DocumentsView({ knowledgeBase }: { knowledgeBase: Knowle
     try {
       await deleteDocument(docToDelete.id)
       setDocuments((prev) => prev.filter((doc) => doc.id !== docToDelete.id))
+      if (documents.length === 1 && page > 0) {
+        setPage((current) => current - 1)
+      } else {
+        await loadDocuments()
+      }
       setDocToDelete(null)
       setError(null)
     } catch (e) {
@@ -175,55 +187,79 @@ export default function DocumentsView({ knowledgeBase }: { knowledgeBase: Knowle
           }
         />
       ) : (
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>文档</th>
-                <th>类型</th>
-                <th>大小</th>
-                <th>状态</th>
-                <th>分块</th>
-                <th>更新时间</th>
-                <th aria-label="操作" />
-              </tr>
-            </thead>
-            <tbody>
-              {documents.map((doc) => (
-                <tr key={doc.id}>
-                  <td>
-                    <div className="doc-cell">
-                      <div className="file-icon">
-                        <FileText size={16} />
-                      </div>
-                      <div>
-                        <strong>{doc.title}</strong>
-                        <span>{doc.fileName}</span>
-                        {doc.status === 'FAILED' && doc.errorMessage && (
-                          <span className="doc-error">{doc.errorMessage}</span>
-                        )}
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <span className="type-chip">{doc.fileType?.toUpperCase() ?? '-'}</span>
-                  </td>
-                  <td>{formatBytes(doc.fileSize ?? 0)}</td>
-                  <td>
-                    <StatusBadge status={doc.status} />
-                  </td>
-                  <td>{doc.status === 'READY' ? doc.chunkCount : '—'}</td>
-                  <td>{formatDate(doc.updatedAt)}</td>
-                  <td>
-                    <IconButton label="删除文档" onClick={() => setDocToDelete(doc)}>
-                      <Trash2 size={16} />
-                    </IconButton>
-                  </td>
+        <>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>文档</th>
+                  <th>类型</th>
+                  <th>大小</th>
+                  <th>状态</th>
+                  <th>分块</th>
+                  <th>更新时间</th>
+                  <th aria-label="操作" />
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {documents.map((doc) => (
+                  <tr key={doc.id}>
+                    <td>
+                      <div className="doc-cell">
+                        <div className="file-icon">
+                          <FileText size={16} />
+                        </div>
+                        <div>
+                          <strong>{doc.title}</strong>
+                          <span>{doc.fileName}</span>
+                          {doc.status === 'FAILED' && doc.errorMessage && (
+                            <span className="doc-error">{doc.errorMessage}</span>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span className="type-chip">{doc.fileType?.toUpperCase() ?? '-'}</span>
+                    </td>
+                    <td>{formatBytes(doc.fileSize ?? 0)}</td>
+                    <td>
+                      <StatusBadge status={doc.status} />
+                    </td>
+                    <td>{doc.status === 'READY' ? doc.chunkCount : '—'}</td>
+                    <td>{formatDate(doc.updatedAt)}</td>
+                    <td>
+                      <IconButton label="删除文档" onClick={() => setDocToDelete(doc)}>
+                        <Trash2 size={16} />
+                      </IconButton>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {!loading && totalElements > 0 && (
+            <div className="pagination">
+              <span>共 {totalElements} 个</span>
+              <div className="pagination-actions">
+                <Button size="sm" disabled={page === 0} onClick={() => setPage((current) => Math.max(0, current - 1))}>
+                  <ChevronLeft size={14} />
+                  上一页
+                </Button>
+                <span>
+                  {page + 1} / {Math.max(1, totalPages)}
+                </span>
+                <Button
+                  size="sm"
+                  disabled={page + 1 >= totalPages}
+                  onClick={() => setPage((current) => current + 1)}
+                >
+                  下一页
+                  <ChevronRight size={14} />
+                </Button>
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {hasProcessing && (
